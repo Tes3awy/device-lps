@@ -10,6 +10,8 @@ This set of scripts will poll the firewall to see how many logs are written per 
 
 1. [Installation](#installation)
 2. [Usage](#usage)
+3. [Credits](#credits)
+4. [TODO](#todo)
 
 ## Installation
 
@@ -27,7 +29,9 @@ sudo apt install expect -y
 - `<Device_Type>` can be either `fw` or `cms`. `fw` will send the appropriate command for a firewall while `cms` will send the appropriate command for Panorama.
 - Samples are taken every 10 seconds, so you would enter 360 to get samples over an hour.
 
-> This is an updated version of the work of art created by `cstancill(at)paloaltonetworks(dot)com` in [**Panorama Sizing and Design Guide**](https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC)
+## Credits
+
+This is an updated version of the work of art created by `cstancill(at)paloaltonetworks(dot)com` in [**Panorama Sizing and Design Guide**](https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Clc8CAC)
 
 ## TODO
 
