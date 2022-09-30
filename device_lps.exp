@@ -1,0 +1,86 @@
+#!/usr/bin/expect
+
+# Log file to use as data source
+
+# Set timeout
+set timeout 60
+
+# Set connection info
+set FW_IP [lindex $argv 0]
+set FW_User [lindex $argv 1]
+set device_type [lindex $argv 2]
+set sample_num [lindex $argv 3]
+
+# Print error if any parameters are missing
+if { $FW_IP == "" || $FW_User == "" || $device_type == "" || $sample_num == "" } {
+  puts "\nERROR: Firewall IP address, Firewall Username, Firewall Password, Device Type, Number of samples values are all Required.\n"
+  puts "Usage: ./device_lps.exp <Firewall IP> <Username> <device_type> <Number of samples>\n"
+  puts "device_type: fw (for a PA Firewall) or cms (for PA Panorama)\n";
+  exit 1
+}
+
+if { $device_type == "fw" } {
+  puts "Device type is set to Firewall"
+} elseif { $device_type == "cms" } {
+  puts "Device type is set to Panorama"
+} else {
+  puts "Invalid device type specified! Please choose either fw or cms.\n"
+  exit 1
+}
+
+log_file
+
+stty -echo
+send_user -- "Enter $device_type Password: "
+expect_user -re "(.*)\n"
+send_user "\n"
+set FW_Pass $expect_out(buffer)
+stty echo
+
+# Counter for an hour sample
+set counter 0
+
+spawn ssh -p 22 -oStrictHostKeyChecking=no -oHostKeyAlgorithms=+ssh-rsa -oPubkeyAcceptedAlgorithms=+ssh-rsa $FW_User@$FW_IP
+stty -echo
+expect "Password: "
+send "$FW_Pass\r"
+stty echo
+
+log_file -noappend "device_lps.txt" 
+
+# Set CLI paging off
+expect -re {(>|#) $}
+send "set cli pager off\r"
+
+# Loop every one second to get log sequence numbers, using the appropriate command for the device type.
+stty -echo
+if { $device_type == "fw" } {
+  while {$counter <= $sample_num} {
+    expect -re {(>|#) $}
+    puts "Getting $device_type sample #$counter"
+    send "debug log-receiver statistics\r"
+    set counter [expr $counter+1]
+    sleep 10
+  }
+} elseif { $device_type == "cms" } {
+  while {$counter <= $sample_num} {
+    expect -re {(>|#) $}
+    puts "Getting $device_type sample #$counter"
+    send "debug log-collector log-collection-stats show incoming-logs\r"
+    set counter [expr $counter+1]
+    sleep 10
+  }
+} else {
+  puts "Invalid device type specified! Please choose either 'fw' or 'cms'.\n"
+  exit 1
+}
+stty echo
+
+log_file
+
+expect -re {(>|#) $}
+send "exit\r"
+puts "Closed $FW_IP SSH connection\n"
+
+spawn "./device_lps.py"
+expect eof
