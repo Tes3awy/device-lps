@@ -13,7 +13,7 @@ set sample_num [lindex $argv 3]
 
 # Print error if any parameters are missing
 if { $FW_IP == "" || $FW_User == "" || $device_type == "" || $sample_num == "" } {
-  puts "\nERROR: Firewall IP address, Firewall Username, Firewall Password, Device Type, Number of samples values are all Required.\n"
+  puts "\nERROR: Firewall IP address, Firewall Username, Device Type, Number of samples values are all Required.\n"
   puts "Usage: ./device_lps.exp <Firewall IP> <Username> <device_type> <Number of samples>\n"
   puts "device_type: fw (for a PA Firewall) or cms (for PA Panorama)\n";
   exit 1
