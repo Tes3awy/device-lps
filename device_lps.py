@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import re
-from datetime import date
+from datetime import date, datetime
 
 print(
     "\nAverage LPS will be printed to the screen and can also be found at the bottom of the samples file with today's date."
@@ -35,6 +35,5 @@ else:
     avg_lps = total_of_samples / num_of_samples
 
 print(f"Average rate LPS is {avg_lps:.5f}")
-outfile.write("Average LPS is: ")
-outfile.write(str(avg_lps))
+outfile.writelines([str(datetime.now()), " Average LPS is: ", str(avg_lps)])
 outfile.close()
